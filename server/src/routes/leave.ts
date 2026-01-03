@@ -5,6 +5,27 @@ import db from '../database/db.js';
 
 const router = express.Router();
 
+// Function to sanitize inappropriate remarks
+const sanitizeRemarks = (text: string | null | undefined): string => {
+  if (!text) return '';
+  
+  // List of inappropriate words/phrases to filter (case insensitive)
+  const inappropriateWords = [
+    'fuck',
+    'f*ck',
+    'fck',
+    // Add more if needed
+  ];
+  
+  let sanitized = text;
+  inappropriateWords.forEach(word => {
+    const regex = new RegExp(word, 'gi');
+    sanitized = sanitized.replace(regex, '***');
+  });
+  
+  return sanitized;
+};
+
 // Apply for leave
 router.post(
   '/',
@@ -28,11 +49,14 @@ router.post(
         return res.status(400).json({ error: 'Start date must be before end date' });
       }
 
+      // Sanitize remarks before storing
+      const sanitizedRemarks = sanitizeRemarks(remarks || '');
+
       const result = db
         .prepare(
           'INSERT INTO leave_requests (user_id, leave_type, start_date, end_date, remarks) VALUES (?, ?, ?, ?, ?)'
         )
-        .run(userId, leave_type, start_date, end_date, remarks || '');
+        .run(userId, leave_type, start_date, end_date, sanitizedRemarks);
 
       // Update attendance records for the leave period
       const start = new Date(start_date);
@@ -78,7 +102,14 @@ router.get('/my-leaves', (req: AuthRequest, res) => {
       )
       .all(userId);
 
-    res.json(leaves);
+    // Sanitize remarks and admin_comment
+    const sanitizedLeaves = leaves.map((leave: any) => ({
+      ...leave,
+      remarks: sanitizeRemarks(leave.remarks),
+      admin_comment: sanitizeRemarks(leave.admin_comment),
+    }));
+
+    res.json(sanitizedLeaves);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -110,7 +141,14 @@ router.get('/all', requireAdmin, (req, res) => {
 
     const leaves = db.prepare(query).all(...params);
 
-    res.json(leaves);
+    // Sanitize remarks and admin_comment
+    const sanitizedLeaves = leaves.map((leave: any) => ({
+      ...leave,
+      remarks: sanitizeRemarks(leave.remarks),
+      admin_comment: sanitizeRemarks(leave.admin_comment),
+    }));
+
+    res.json(sanitizedLeaves);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -141,10 +179,13 @@ router.put(
         return res.status(404).json({ error: 'Leave request not found' });
       }
 
+      // Sanitize admin_comment before storing
+      const sanitizedAdminComment = sanitizeRemarks(admin_comment || '');
+
       // Update leave request
       db.prepare(
         'UPDATE leave_requests SET status = ?, approved_by = ?, admin_comment = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?'
-      ).run(status, adminId, admin_comment || '', id);
+      ).run(status, adminId, sanitizedAdminComment, id);
 
       // If rejected, update attendance records back
       if (status === 'rejected') {

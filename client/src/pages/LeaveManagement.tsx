@@ -5,6 +5,27 @@ import axios from 'axios';
 import { Calendar, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 
+// Function to sanitize inappropriate remarks
+const sanitizeRemarks = (text: string | null | undefined): string => {
+  if (!text) return '';
+  
+  // List of inappropriate words/phrases to filter (case insensitive)
+  const inappropriateWords = [
+    'fuck',
+    'f*ck',
+    'fck',
+    // Add more if needed
+  ];
+  
+  let sanitized = text;
+  inappropriateWords.forEach(word => {
+    const regex = new RegExp(word, 'gi');
+    sanitized = sanitized.replace(regex, '***');
+  });
+  
+  return sanitized;
+};
+
 const LeaveManagement = () => {
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin' || user?.role === 'hr';
@@ -240,7 +261,7 @@ const LeaveManagement = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500">
-                      {leave.remarks || '-'}
+                      {sanitizeRemarks(leave.remarks) || '-'}
                     </td>
                     {isAdmin && leave.status === 'pending' && (
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
