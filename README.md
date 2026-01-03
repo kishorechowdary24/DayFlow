@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Dayflow - Human Resource Management System
 
 **Every workday, perfectly aligned.**
@@ -274,4 +273,3 @@ This project is provided as-is for educational and business use.
 
 =======
 # Dayflow-Human-Resource-Management-System
->>>>>>> a8a458303a2f614404b2e50c91143764f7f66a75
