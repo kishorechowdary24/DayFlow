@@ -5,7 +5,7 @@ import axios from 'axios';
 import { Save, Edit2, X } from 'lucide-react';
 
 const Profile = () => {
-  const { user, login } = useAuth();
+  const { user } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -170,14 +170,11 @@ const Profile = () => {
               </label>
               <input
                 type="text"
-                className="input bg-gray-100"
+                className={`input ${!isEditing ? 'bg-gray-100' : ''}`}
                 value={profile?.username || `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim() || ''}
-                disabled
-                title="Username is automatically generated from your name"
+                onChange={(e) => setProfile({ ...profile, username: e.target.value })}
+                disabled={!isEditing}
               />
-              <p className="mt-1 text-xs text-gray-500">
-                Username is based on your full name
-              </p>
             </div>
 
             <div>

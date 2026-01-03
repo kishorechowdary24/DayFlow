@@ -87,6 +87,7 @@ router.put('/:id', (req: AuthRequest, res) => {
     const {
       first_name,
       last_name,
+      username,
       phone,
       address,
       profile_picture,
@@ -97,7 +98,7 @@ router.put('/:id', (req: AuthRequest, res) => {
       salary,
     } = req.body;
 
-    // Employees can edit their name, phone, address, and profile picture
+    // Employees can edit their name, username, phone, address, and profile picture
     if (!isAdmin) {
       db.prepare(`
         UPDATE employee_profiles 
@@ -111,11 +112,11 @@ router.put('/:id', (req: AuthRequest, res) => {
         WHERE user_id = ?
       `).run(first_name, last_name, phone, address, profile_picture, userId);
       
-      // Update username in users table to match the full name
-      const fullName = `${first_name || ''} ${last_name || ''}`.trim();
-      if (fullName) {
+      // Update username in users table
+      const usernameToUpdate = username || `${first_name || ''} ${last_name || ''}`.trim();
+      if (usernameToUpdate) {
         try {
-          db.prepare('UPDATE users SET username = ? WHERE id = ?').run(fullName, userId);
+          db.prepare('UPDATE users SET username = ? WHERE id = ?').run(usernameToUpdate, userId);
         } catch (error: any) {
           // If username column doesn't exist or update fails, continue
           console.warn('Could not update username:', error.message);
@@ -152,11 +153,11 @@ router.put('/:id', (req: AuthRequest, res) => {
         userId
       );
       
-      // Update username in users table to match the full name
-      const fullName = `${first_name || ''} ${last_name || ''}`.trim();
-      if (fullName) {
+      // Update username in users table
+      const usernameToUpdate = username || `${first_name || ''} ${last_name || ''}`.trim();
+      if (usernameToUpdate) {
         try {
-          db.prepare('UPDATE users SET username = ? WHERE id = ?').run(fullName, userId);
+          db.prepare('UPDATE users SET username = ? WHERE id = ?').run(usernameToUpdate, userId);
         } catch (error: any) {
           // If username column doesn't exist or update fails, continue
           console.warn('Could not update username:', error.message);

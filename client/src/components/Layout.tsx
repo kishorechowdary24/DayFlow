@@ -45,11 +45,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         { path: '/leave', icon: Calendar, label: 'Leave Requests' },
         { path: '/payroll', icon: DollarSign, label: 'Payroll' },
         { path: '/reports', icon: FileText, label: 'Reports' },
-        { path: '/profile', icon: User, label: 'Profile' },
       ]
     : [
         { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-        { path: '/profile', icon: User, label: 'Profile' },
         { path: '/attendance', icon: Clock, label: 'Attendance' },
         { path: '/leave', icon: Calendar, label: 'Leave Requests' },
         { path: '/payroll', icon: DollarSign, label: 'Payroll' },

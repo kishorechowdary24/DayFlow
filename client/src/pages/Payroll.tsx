@@ -426,27 +426,14 @@ Status: ${data.status}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center gap-2">
-                        {isAdmin && (
+                        {isAdmin && record.status !== 'paid' && (
                           <button
                             onClick={() => handleApprovePayroll(record.id, record.status)}
-                            className={`flex items-center px-2 py-1 rounded text-xs font-medium ${
-                              record.status === 'paid'
-                                ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
-                                : 'bg-green-100 text-green-800 hover:bg-green-200'
-                            }`}
-                            title={record.status === 'paid' ? 'Mark as Pending' : 'Mark as Paid'}
+                            className="flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800 hover:bg-green-200"
+                            title="Mark as Paid"
                           >
-                            {record.status === 'paid' ? (
-                              <>
-                                <XCircle className="w-3 h-3 mr-1" />
-                                Mark Pending
-                              </>
-                            ) : (
-                              <>
-                                <CheckCircle className="w-3 h-3 mr-1" />
-                                Approve
-                              </>
-                            )}
+                            <CheckCircle className="w-3 h-3 mr-1" />
+                            Approve
                           </button>
                         )}
                         <button
